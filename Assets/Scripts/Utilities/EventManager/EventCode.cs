@@ -1,5 +1,6 @@
 ﻿
 public class EventCode
 {
-    public const string TESTING_EVENT_1 = "TESTING_EVENT_1";
+    public const string ON_MOVING_TOUCH = "ON_MOVING_TOUCH";
+    public const string ON_TRANSFORM_TOUCH = "ON_TRANSFORM_TOUCH";
 }

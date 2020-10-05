@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class EventManager
+public class EventSystem
 {
     public string GetClassName()
     {
         return this.GetType().Name;
     }
 
-    private static EventManager _instance;
+    private static EventSystem _instance;
 
-    public static EventManager instance
+    public static EventSystem instance
     {
         get
         {
             if (_instance == null)
-                _instance = new EventManager();
+                _instance = new EventSystem();
             return _instance;
         }
     }
 
     private Dictionary<string, List<EventListener>> _eventList = null;
-    public EventManager()
+    public EventSystem()
     {
         _eventList = new Dictionary<string, List<EventListener>>();
     }

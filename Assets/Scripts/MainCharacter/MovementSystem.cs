@@ -8,66 +8,46 @@ public class MovementSystem : MonoBehaviour
     }
 
     // ========== Fields and properties ==========
-    private int _currentFingerId = -1;
+    private EventListener[] _eventListener = null;
     private Vector3 _lastTouchPosition = Vector3.zero;
 
     // ========== Constructors ==========
     void Start()
     {
         _lastTouchPosition = Vector3.zero;
-        _currentFingerId = -1;
+        AddListeners();
     }
 
-    void Update()
+    private void AddListeners()
     {
-        MovementControl();
+        _eventListener = new EventListener[1];
+        _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_MOVING_TOUCH, this, OnMovingTouch);
     }
 
-    // ========== Methods ==========
-    private void MovementControl()
+    private void RemoveListeners()
     {
-        if (Input.touchCount > 0)
+        foreach (EventListener listener in _eventListener)
         {
-            if (_currentFingerId == -1)
-            {
-                for (int i = 0; i < Input.touchCount; i++)
-                {
-                    Touch touch = Input.GetTouch(i);
-                    if (touch.position.y < Screen.height / 2)
-                    {
-                        _currentFingerId = touch.fingerId;
-                        break;
-                    }
-                }
-            }
-            if (_currentFingerId >= 0)
-            {
-                try
-                {
-                    Touch currentTouch = TouchUtils.instance.GetTouchByFingerID(_currentFingerId);
-                    OnTouch(currentTouch);
-                }
-                catch (UnityException e)
-                {
-                    LogUtils.instance.Log(e.Message);
-                }
-            }
+            EventSystem.instance.RemoveListener(listener.eventCode, listener);
         }
     }
 
-    private void OnTouch(Touch touch)
+    // ========== Methods ==========
+
+    private void OnMovingTouch(object[] eventParam)
     {
+        Touch touch = (Touch)eventParam[0];
         switch (touch.phase)
         {
             case TouchPhase.Began:
                 OnTouchBegan(touch);
-                return;
-            case TouchPhase.Ended:
-                OnTouchEnded(touch);
-                return;
+                break;
             case TouchPhase.Moved:
                 OnTouchMoved(touch);
-                return;
+                break;
+            case TouchPhase.Ended:
+                OnTouchEnded(touch);
+                break;
         }
     }
 
@@ -95,7 +75,6 @@ public class MovementSystem : MonoBehaviour
     private void OnTouchEnded(Touch touch)
     {
         _lastTouchPosition = Vector3.zero;
-        _currentFingerId = -1;
         return;
     }
 }
