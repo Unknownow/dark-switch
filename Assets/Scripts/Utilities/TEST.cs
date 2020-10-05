@@ -8,7 +8,7 @@ public class TEST : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        test = EventManager.instance.AddListener("TEST_EVENT", this, testAction);
+        test = EventManager.instance.AddListener(EventCode.TESTING_EVENT_1, this, testAction);
     }
 
     // Update is called once per frame
@@ -16,11 +16,11 @@ public class TEST : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            EventManager.instance.DispatchEvent("TEST_EVENT", new object[] { Vector3.zero });
+            EventManager.instance.DispatchEvent(EventCode.TESTING_EVENT_1, new object[] { Vector3.zero });
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            EventManager.instance.RemoveListener("TEST_EVENT", test);
+            EventManager.instance.RemoveListener(EventCode.TESTING_EVENT_1, test);
         }
     }
 

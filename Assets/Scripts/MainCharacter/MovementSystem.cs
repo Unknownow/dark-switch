@@ -20,11 +20,11 @@ public class MovementSystem : MonoBehaviour
 
     void Update()
     {
-        movementControl();
+        MovementControl();
     }
 
     // ========== Methods ==========
-    private void movementControl()
+    private void MovementControl()
     {
         if (Input.touchCount > 0)
         {
@@ -44,8 +44,8 @@ public class MovementSystem : MonoBehaviour
             {
                 try
                 {
-                    Touch currentTouch = TouchUtils.instance.getTouchByFingerID(_currentFingerId);
-                    onTouch(currentTouch);
+                    Touch currentTouch = TouchUtils.instance.GetTouchByFingerID(_currentFingerId);
+                    OnTouch(currentTouch);
                 }
                 catch (UnityException e)
                 {
@@ -55,23 +55,23 @@ public class MovementSystem : MonoBehaviour
         }
     }
 
-    private void onTouch(Touch touch)
+    private void OnTouch(Touch touch)
     {
         switch (touch.phase)
         {
             case TouchPhase.Began:
-                onTouchBegan(touch);
+                OnTouchBegan(touch);
                 return;
             case TouchPhase.Ended:
-                onTouchEnded(touch);
+                OnTouchEnded(touch);
                 return;
             case TouchPhase.Moved:
-                onTouchMoved(touch);
+                OnTouchMoved(touch);
                 return;
         }
     }
 
-    private void onTouchBegan(Touch touch)
+    private void OnTouchBegan(Touch touch)
     {
         Vector3 currentTouchPosition = touch.position;
         currentTouchPosition = Camera.main.ScreenToWorldPoint(currentTouchPosition);
@@ -79,7 +79,7 @@ public class MovementSystem : MonoBehaviour
         _lastTouchPosition = currentTouchPosition;
     }
 
-    private void onTouchMoved(Touch touch)
+    private void OnTouchMoved(Touch touch)
     {
         Vector3 delta = touch.deltaPosition;
         if (delta.sqrMagnitude > 20)
@@ -92,7 +92,7 @@ public class MovementSystem : MonoBehaviour
         }
     }
 
-    private void onTouchEnded(Touch touch)
+    private void OnTouchEnded(Touch touch)
     {
         _lastTouchPosition = Vector3.zero;
         _currentFingerId = -1;

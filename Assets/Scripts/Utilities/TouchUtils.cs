@@ -14,7 +14,7 @@ public class TouchUtils
         }
     }
 
-    public Touch getTouchByFingerID(int fingerId)
+    public Touch GetTouchByFingerID(int fingerId)
     {
         if (Input.touchCount <= 0)
             throw new UnityException("NO TOUCHES EXIST");
