@@ -11,22 +11,23 @@ public class PlayerInput : MonoBehaviour
 
     // ========== Fields and properties ==========
     private int _currentMovingFingerId = -1;
-    // private Vector3 _lastMovingTouchPosition = Vector3.zero;
 
     // ========== Constructors ==========
     void Start()
     {
-        // _lastMovingTouchPosition = Vector3.zero;
         _currentMovingFingerId = -1;
     }
 
     void Update()
     {
-        MovementControl();
+        GetPlayerInput();
     }
 
-    // ========== Methods ==========
-    private void MovementControl()
+    // ========== Private Methods ==========
+    /// <summary>
+    /// Get player input and dispatch it.
+    /// </summary>
+    private void GetPlayerInput()
     {
         if (Input.touchCount > 0)
         {

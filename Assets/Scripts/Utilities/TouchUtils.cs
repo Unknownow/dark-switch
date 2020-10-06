@@ -2,6 +2,12 @@
 
 public class TouchUtils
 {
+    public string getClassName()
+    {
+        return this.GetType().Name;
+    }
+
+    // ========== Fields and properties ==========
     private static TouchUtils _instance;
 
     public static TouchUtils instance
@@ -14,6 +20,7 @@ public class TouchUtils
         }
     }
 
+    // ========== Public Methods ==========
     public Touch GetTouchByFingerID(int fingerId)
     {
         if (Input.touchCount <= 0)

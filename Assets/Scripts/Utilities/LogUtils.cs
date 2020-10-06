@@ -6,6 +6,7 @@ public class LogUtils
         return this.GetType().Name;
     }
 
+    // ========== Fields and properties ==========
     private static LogUtils _instance;
 
     public static LogUtils instance
@@ -17,7 +18,13 @@ public class LogUtils
             return _instance;
         }
     }
+    // ========== Constructors ==========
+    private LogUtils()
+    {
+        
+    }
 
+    // ========== Public Methods ==========
     public void Log(params string[] logs)
     {
         string logString = "";

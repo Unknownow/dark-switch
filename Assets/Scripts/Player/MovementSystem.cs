@@ -33,7 +33,6 @@ public class MovementSystem : MonoBehaviour
     }
 
     // ========== Methods ==========
-
     private void OnMovingTouch(object[] eventParam)
     {
         Touch touch = (Touch)eventParam[0];
