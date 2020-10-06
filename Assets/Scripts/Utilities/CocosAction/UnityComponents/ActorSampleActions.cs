@@ -4,10 +4,6 @@ using CocosAction;
 
 public class ActorSampleActions : Actor
 {
-    public string GetClassName()
-    {
-        return this.GetType().Name;
-    }
     public void Start()
     {
         ActionInstant seq = new ActionRepeat(new ActionSequence(new ActionInstant[]
