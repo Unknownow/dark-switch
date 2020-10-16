@@ -61,7 +61,7 @@ public class MovementSystem : MonoBehaviour
     private void OnTouchMoved(Touch touch)
     {
         Vector3 delta = touch.deltaPosition;
-        if (delta.sqrMagnitude > 20)
+        if (delta.sqrMagnitude > 2)
         {
             Vector3 currentTouchPosition = touch.position;
             currentTouchPosition = Camera.main.ScreenToWorldPoint(currentTouchPosition);

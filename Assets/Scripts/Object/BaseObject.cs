@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum ObjectState
 {
-    BLACK = 0,
-    WHITE = 1
+    STATE_0 = 0,
+    STATE_1 = 1
 }
 
 public enum ObjectType
@@ -22,13 +23,13 @@ public class BaseObject : MonoBehaviour
     }
 
     // ========== Fields and properties ==========
-    private EventListener[] _eventListener = null;
+    protected EventListener[] _eventListener = null;
 
     [SerializeField]
-    private GameObject[] _stateObjectList;
+    protected GameObject[] _stateObjectList;
 
     [SerializeField]
-    private ObjectState _currentState = ObjectState.WHITE;
+    protected ObjectState _currentState = ObjectState.STATE_0;
     public ObjectState currentState
     {
         get
@@ -42,7 +43,7 @@ public class BaseObject : MonoBehaviour
     }
 
     [SerializeField]
-    private int _sortingOrder = 0;
+    protected int _sortingOrder = 0;
     public int sortingOrder
     {
         get
@@ -60,7 +61,7 @@ public class BaseObject : MonoBehaviour
     }
 
     [SerializeField]
-    private ObjectType _type = ObjectType.BASE;
+    protected ObjectType _type = ObjectType.BASE;
     public ObjectType type
     {
         get
@@ -70,7 +71,7 @@ public class BaseObject : MonoBehaviour
     }
 
     [SerializeField]
-    private bool _isObjectActive = false;
+    protected bool _isObjectActive = false;
     public bool isObjectActive
     {
         get
@@ -85,36 +86,37 @@ public class BaseObject : MonoBehaviour
     }
 
     // ========== Constructors ==========
-    void Start()
+    private void Start()
     {
         InitObject();
         sortingOrder = _sortingOrder;
         TransformState(_currentState);
     }
 
-    private void InitObject()
+    protected void InitObject()
     {
         int stateCount = transform.childCount;
         _stateObjectList = new GameObject[stateCount];
         for (int i = 0; i < stateCount; i++)
         {
             _stateObjectList[i] = transform.GetChild(i).gameObject;
+            _stateObjectList[i].GetComponent<BaseObjectState>().state = (ObjectState)i;
         }
         AddListeners();
     }
 
-    private void ClearObject()
+    protected void ClearObject()
     {
         RemoveListeners();
     }
 
-    private void AddListeners()
+    protected void AddListeners()
     {
         _eventListener = new EventListener[1];
         _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_TOUCH, this, OnTransformTouch);
     }
 
-    private void RemoveListeners()
+    protected void RemoveListeners()
     {
         foreach (EventListener listener in _eventListener)
         {
@@ -123,7 +125,7 @@ public class BaseObject : MonoBehaviour
     }
 
     // ========== Public Methods ==========
-    public virtual void TransformState(ObjectState state = ObjectState.WHITE)
+    public virtual void TransformState(ObjectState state = ObjectState.STATE_0)
     {
         LogUtils.instance.Log(GetClassName(), gameObject.name, "TransformState", state.ToString());
         _currentState = state;
@@ -131,8 +133,8 @@ public class BaseObject : MonoBehaviour
             _stateObjectList[i].SetActive(i == (int)_currentState);
     }
 
-    // ========== Private Methods ==========
-    private void OnTransformTouch(object[] eventParam)
+    // ========== protected Methods ==========
+    protected void OnTransformTouch(object[] eventParam)
     {
         Touch touch = (Touch)eventParam[0];
         if (touch.phase == TouchPhase.Began)
