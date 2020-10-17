@@ -10,12 +10,14 @@ public class MovementSystem : MonoBehaviour
     // ========== Fields and properties ==========
     private EventListener[] _eventListener = null;
     private Vector3 _lastTouchPosition = Vector3.zero;
+    private Collider2D _playerCollider;
 
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     void Start()
     {
         _lastTouchPosition = Vector3.zero;
         AddListeners();
+        _playerCollider = gameObject.GetComponent<Collider2D>();
     }
 
     private void AddListeners()
@@ -32,7 +34,37 @@ public class MovementSystem : MonoBehaviour
         }
     }
 
-    // ========== Methods ==========
+    private void OnDestroy()
+    {
+        RemoveListeners();
+    }
+
+    // ========== Private Methods ==========
+    private bool CheckPositionInCameraBoundaries(Vector3 newPosition)
+    {
+        if (_playerCollider)
+        {
+            Bounds playerBound = _playerCollider.bounds;
+            Vector3 newMin = newPosition - playerBound.extents;
+            Vector3 newMax = newPosition + playerBound.extents;
+
+            Camera mainCam = Camera.main;
+            float cameraHeight = mainCam.orthographicSize * 2;
+            float cameraWidth = cameraHeight * mainCam.aspect;
+            Vector3 cameraPosition = mainCam.transform.position;
+
+            if (
+                newMin.x < cameraPosition.x - cameraWidth / 2 ||
+                newMin.y < cameraPosition.y - cameraHeight / 2 ||
+                newMax.x > cameraPosition.x + cameraWidth / 2 ||
+                newMax.y > cameraPosition.y + cameraHeight / 2
+            )
+                return false;
+            return true;
+        }
+        return false;
+    }
+
     private void OnMovingTouch(object[] eventParam)
     {
         Touch touch = (Touch)eventParam[0];
@@ -66,7 +98,12 @@ public class MovementSystem : MonoBehaviour
             Vector3 currentTouchPosition = touch.position;
             currentTouchPosition = Camera.main.ScreenToWorldPoint(currentTouchPosition);
             currentTouchPosition.z = 0;
-            transform.position += currentTouchPosition - _lastTouchPosition;
+
+            Vector3 movingOffset = currentTouchPosition - _lastTouchPosition;
+            Vector3 newPosition = transform.position + movingOffset;
+            if (CheckPositionInCameraBoundaries(newPosition))
+                transform.position = newPosition;
+
             _lastTouchPosition = currentTouchPosition;
         }
     }

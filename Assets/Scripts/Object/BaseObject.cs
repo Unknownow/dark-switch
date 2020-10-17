@@ -85,7 +85,7 @@ public class BaseObject : MonoBehaviour
         }
     }
 
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     private void Start()
     {
         InitObject();
@@ -122,6 +122,11 @@ public class BaseObject : MonoBehaviour
         {
             EventSystem.instance.RemoveListener(listener.eventCode, listener);
         }
+    }
+
+    private void OnDestroy()
+    {
+        RemoveListeners();
     }
 
     // ========== Public Methods ==========

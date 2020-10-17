@@ -18,7 +18,7 @@ public class LogUtils
             return _instance;
         }
     }
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     private LogUtils()
     {
         

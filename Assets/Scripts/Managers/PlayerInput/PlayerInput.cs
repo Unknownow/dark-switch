@@ -12,7 +12,7 @@ public class PlayerInput : MonoBehaviour
     // ========== Fields and properties ==========
     private int _currentMovingFingerId = -1;
 
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     void Start()
     {
         _currentMovingFingerId = -1;
@@ -69,8 +69,6 @@ public class PlayerInput : MonoBehaviour
                     LogUtils.instance.Log(e.Message);
                 }
             }
-
-
         }
     }
 

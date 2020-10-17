@@ -17,11 +17,11 @@ public class CollisionSystem : MonoBehaviour
     private Vector2 _objectSize;
 
     [SerializeField]
-    private List<ObjectState> _allowedState;
+    private List<ObjectState> _allowedState = new List<ObjectState>();
     private Collider2D _playerCollider;
 
     private float _deadCountdown = 0;
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     private void Start()
     {
         _playerCollider = gameObject.GetComponent<Collider2D>();
@@ -35,8 +35,10 @@ public class CollisionSystem : MonoBehaviour
     // ========== Private Methods ==========
     private void CheckPlayerCollision()
     {
+        if (_deadCountdown <= 0)
+            return;
+
         bool isAllowedStateAvailable = IsAllowedStateAvailable();
-        // Debug.Log(_deadCountdown);
         if (!isAllowedStateAvailable)
         {
             LogUtils.instance.Log(GetClassName(), "NO ALLOWED STATE AVAILABLE");
@@ -58,7 +60,6 @@ public class CollisionSystem : MonoBehaviour
     private bool IsAllowedStateAvailable()
     {
         bool hasAllowedState = true;
-        bool isBackgroundStateAllowed = false;
         Collider2D[] collidersList = Physics2D.OverlapBoxAll(transform.position, _objectSize, 0, _objectMask);
 
         if (collidersList.Length > 0)
@@ -71,7 +72,7 @@ public class CollisionSystem : MonoBehaviour
                 if (baseObject && baseObject.type == ObjectType.BACK_GROUND)
                 {
                     background = baseObject;
-                    hasAllowedState = isBackgroundStateAllowed = CheckIfObjectIsInAllowedState(background);
+                    hasAllowedState = CheckIfObjectIsInAllowedState(background);
                     break;
                 }
             }
@@ -84,9 +85,9 @@ public class CollisionSystem : MonoBehaviour
                     BaseObject baseObject = baseObjectState.parentObject;
                     if (baseObject.type == ObjectType.BACK_GROUND)
                         continue;
-                    if (isBackgroundStateAllowed)
+                    if (hasAllowedState)
                     {
-                        if (!CheckIfObjectIsInAllowedState(baseObject) && CheckIsColliderIsWithinAnotherCollider(_playerCollider, collider))
+                        if (!CheckIfObjectIsInAllowedState(baseObject) && CheckIfColliderIsWithinAnotherCollider(_playerCollider, collider))
                         {
                             hasAllowedState = false;
                             break;
@@ -100,7 +101,7 @@ public class CollisionSystem : MonoBehaviour
         return hasAllowedState;
     }
 
-    private bool CheckIsColliderIsWithinAnotherCollider(Collider2D checkCollider, Collider2D targetCollider)
+    private bool CheckIfColliderIsWithinAnotherCollider(Collider2D checkCollider, Collider2D targetCollider)
     {
         if (targetCollider.bounds.Contains(checkCollider.bounds.min) && targetCollider.bounds.Contains(checkCollider.bounds.max))
             return true;
@@ -115,12 +116,5 @@ public class CollisionSystem : MonoBehaviour
                 return false;
         }
         return true;
-    }
-
-    // ========== Draw Gizmos ==========
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, _objectSize);
     }
 }

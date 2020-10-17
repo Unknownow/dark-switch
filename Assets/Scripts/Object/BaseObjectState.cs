@@ -32,7 +32,7 @@ public class BaseObjectState : MonoBehaviour
         }
     }
 
-    // ========== Constructors ==========
+    // ========== MonoBehaviour Functions ==========
     void Start()
     {
         _parentObject = transform.GetComponentInParent<BaseObject>();
