@@ -18,15 +18,18 @@ public class LogUtils
             return _instance;
         }
     }
+
     // ========== MonoBehaviour Functions ==========
     private LogUtils()
     {
-        
+
     }
 
     // ========== Public Methods ==========
     public void Log(params string[] logs)
     {
+        if (!GameSetting.isLog)
+            return;
         string logString = "";
         for (int i = 0; i < logs.Length; i++)
         {

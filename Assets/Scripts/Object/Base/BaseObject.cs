@@ -112,7 +112,7 @@ public class BaseObject : MonoBehaviour
 
     protected void AddListeners()
     {
-        _eventListener = new EventListener[1];
+        _eventListener = new EventListener[1];  
         _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_TOUCH, this, OnTransformTouch);
     }
 
@@ -138,7 +138,7 @@ public class BaseObject : MonoBehaviour
             _stateObjectList[i].SetActive(i == (int)_currentState);
     }
 
-    // ========== protected Methods ==========
+    // ========== Protected Methods ==========
     protected void OnTransformTouch(object[] eventParam)
     {
         Touch touch = (Touch)eventParam[0];

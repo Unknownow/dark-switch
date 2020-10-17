@@ -2,22 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-// TODO: WRITE CODE
 public class ObjectSpawner : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public string GetClassName()
     {
+        return this.GetType().Name;
+    }
+    // ========== Fields and properties ==========
+    private BaseObject _currentBackground;
 
+    // ========== MonoBehaviour Functions ==========
+    private void Start()
+    {
+        InitBackground();
     }
 
-    // Update is called once per frame
-    void Update()
+    // ========== Public Functions ==========
+
+    // ========== Private Functions ==========
+    private void InitBackground()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        _currentBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND);
+        _currentBackground.isObjectActive = true;
+        _currentBackground.transform.position = Vector3.zero;
+        GameObject currentPlayer = GameObject.FindObjectOfType<Player>().gameObject;
+        if (currentPlayer)
         {
-            ObjectPool.instance.GetObject(ObjectType.BACK_GROUND).isObjectActive = true;
+            List<ObjectState> allowedState = currentPlayer.GetComponent<CollisionSystem>().allowedState;
+            int randomAllowedStateIndex = Mathf.FloorToInt(Random.Range(0, allowedState.Count));
+            _currentBackground.currentState = allowedState[randomAllowedStateIndex];
         }
+        else
+            _currentBackground.isObjectActive = false;
     }
 }

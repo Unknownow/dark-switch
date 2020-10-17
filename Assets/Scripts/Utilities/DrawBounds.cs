@@ -66,15 +66,15 @@ public class DrawBounds : MonoBehaviour
             {
                 case DrawType.Collider:
                     objectBounds = _objectCollider.bounds;
-                    drawColor = Color.red;
+                    drawColor = Color.green;
                     break;
                 case DrawType.Collider2D:
                     objectBounds = _objectCollider2d.bounds;
-                    drawColor = Color.red;
+                    drawColor = Color.green;
                     break;
                 case DrawType.Renderer:
                     objectBounds = _objectRenderer.bounds;
-                    drawColor = Color.red;
+                    drawColor = Color.blue;
                     break;
                 case DrawType.SpriteRenderer:
                     objectBounds = _objectSpriteRenderer.bounds;

@@ -22,14 +22,12 @@ public class ObjectPool : MonoBehaviour
     [SerializeField]
     private List<GameObject> _prefabsList = new List<GameObject>();
     private List<BaseObject> _pool;
-
     private ObjectPool()
     {
         if (_instance == null)
             _instance = this;
         _pool = new List<BaseObject>();
     }
-
 
     // ========== Public Methods ==========
     public BaseObject GetObject(ObjectType type)
@@ -47,7 +45,14 @@ public class ObjectPool : MonoBehaviour
         }
         if (baseObject == null)
             baseObject = CreateObject(type);
+        baseObject.transform.position = new Vector3(-100, -100, 0);
+        baseObject.isObjectActive = true;
         return baseObject;
+    }
+
+    public void DestroyObject(BaseObject baseObject)
+    {
+        baseObject.isObjectActive = false;
     }
 
     // ========== Private Methods ==========

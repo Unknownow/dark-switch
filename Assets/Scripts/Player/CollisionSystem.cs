@@ -18,6 +18,13 @@ public class CollisionSystem : MonoBehaviour
 
     [SerializeField]
     private List<ObjectState> _allowedState = new List<ObjectState>();
+    public List<ObjectState> allowedState
+    {
+        get
+        {
+            return _allowedState;
+        }
+    }
     private Collider2D _playerCollider;
 
     private float _deadCountdown = 0;
@@ -59,26 +66,33 @@ public class CollisionSystem : MonoBehaviour
 
     private bool IsAllowedStateAvailable()
     {
-        bool hasAllowedState = true;
+        bool hasAllowedState = false;
         Collider2D[] collidersList = Physics2D.OverlapBoxAll(transform.position, _objectSize, 0, _objectMask);
 
         if (collidersList.Length > 0)
         {
-            BaseObject background = null;
+            List<BaseObject> backgroundList = new List<BaseObject>();
             foreach (Collider2D collider in collidersList)
             {
+                if (collider.transform.parent == null)
+                    continue;
                 BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
+                if (baseObjectState == null)
+                    continue;
                 BaseObject baseObject = baseObjectState.parentObject;
                 if (baseObject && baseObject.type == ObjectType.BACK_GROUND)
-                {
-                    background = baseObject;
-                    hasAllowedState = CheckIfObjectIsInAllowedState(background);
-                    break;
-                }
+                    backgroundList.Add(baseObject);
             }
 
-            if (background != null)
+            if (backgroundList.Count > 0)
             {
+                foreach (BaseObject background in backgroundList)
+                {
+                    hasAllowedState = CheckIfObjectIsInAllowedState(background);
+                    if (hasAllowedState)
+                        break;
+                }
+
                 foreach (Collider2D collider in collidersList)
                 {
                     BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
