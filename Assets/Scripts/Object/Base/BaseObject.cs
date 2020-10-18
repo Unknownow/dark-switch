@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ObjectState
-{
-    STATE_0 = 0,
-    STATE_1 = 1
-}
-
 public enum ObjectType
 {
     BASE,
     BACK_GROUND,
+}
+
+public enum ObjectState
+{
+    STATE_0 = 0,
+    STATE_1 = 1
 }
 
 public class BaseObject : MonoBehaviour
@@ -70,23 +70,8 @@ public class BaseObject : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    protected bool _isObjectActive = false;
-    public bool isObjectActive
-    {
-        get
-        {
-            return this._isObjectActive;
-        }
-        set
-        {
-            this._isObjectActive = value;
-            gameObject.SetActive(value);
-        }
-    }
-
-    // ========== MonoBehaviour Functions ==========
-    private void Start()
+    // ========== MonoBehaviour Methods ==========
+    protected virtual void Awake()
     {
         InitObject();
         sortingOrder = _sortingOrder;
@@ -98,10 +83,7 @@ public class BaseObject : MonoBehaviour
         int stateCount = transform.childCount;
         _stateObjectList = new GameObject[stateCount];
         for (int i = 0; i < stateCount; i++)
-        {
             _stateObjectList[i] = transform.GetChild(i).gameObject;
-            _stateObjectList[i].GetComponent<BaseObjectState>().state = (ObjectState)i;
-        }
         AddListeners();
     }
 
@@ -112,7 +94,7 @@ public class BaseObject : MonoBehaviour
 
     protected void AddListeners()
     {
-        _eventListener = new EventListener[1];  
+        _eventListener = new EventListener[1];
         _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_TOUCH, this, OnTransformTouch);
     }
 
@@ -135,7 +117,9 @@ public class BaseObject : MonoBehaviour
         LogUtils.instance.Log(GetClassName(), gameObject.name, "TransformState", state.ToString());
         _currentState = state;
         for (int i = 0; i < _stateObjectList.Length; i++)
+        {
             _stateObjectList[i].SetActive(i == (int)_currentState);
+        }
     }
 
     // ========== Protected Methods ==========

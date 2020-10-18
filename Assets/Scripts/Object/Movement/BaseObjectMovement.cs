@@ -56,7 +56,7 @@ public class BaseObjectMovement : MonoBehaviour
     private Vector3 velocity;
     private Vector3 endPosition;
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     protected virtual void Start()
     {
         endPosition = transform.position;
@@ -69,7 +69,7 @@ public class BaseObjectMovement : MonoBehaviour
             MoveWithVelocity();
     }
 
-    // ========== Public Functions ==========
+    // ========== Public Methods ==========
     public void MoveTo(Vector3 endPosition)
     {
         velocity = endPosition - transform.position;
@@ -83,7 +83,7 @@ public class BaseObjectMovement : MonoBehaviour
         velocity = distance.normalized * movementSpeed * movementSpeedMultiplier;
     }
 
-    // ========== Protected Functions ==========
+    // ========== Protected Methods ==========
     protected void MoveWithVelocity()
     {
         transform.position += velocity * Time.deltaTime;

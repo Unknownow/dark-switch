@@ -19,7 +19,7 @@ public class LogUtils
         }
     }
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     private LogUtils()
     {
 

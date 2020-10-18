@@ -4,10 +4,30 @@ using UnityEngine;
 
 public class BackgroundObject : BaseObject
 {
-    [SerializeField]
-    private ObjectState _defaultState = ObjectState.STATE_0;
-    private void Start() {
-        this._currentState = _defaultState;
+    // ========== Fields and properties ==========
+
+    // ========== MonoBehaviour Methods ==========
+    protected override void Awake()
+    {
+        InitObject();
+        sortingOrder = _sortingOrder;
         this._type = ObjectType.BACK_GROUND;
+    }
+
+    // ========== Public Methods ==========
+    public void TransformRandomlyToStateWithAllowedCollider(List<ColliderType> allowedColliderList)
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            BaseObjectState objectState = transform.GetChild(i).GetComponent<BaseObjectState>();
+            if (objectState == null)
+                continue;
+            if (objectState.IsHavingAllowedCollider(allowedColliderList))
+            {
+                TransformState((ObjectState)i);
+                if (Random.Range(0, 1) > 0.5)
+                    return;
+            }
+        }
     }
 }

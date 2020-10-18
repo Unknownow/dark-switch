@@ -10,15 +10,7 @@ public class BaseObjectState : MonoBehaviour
     }
 
     // ========== Fields and properties ==========
-    private BaseObject _parentObject;
-    public BaseObject parentObject
-    {
-        get
-        {
-            return this._parentObject;
-        }
-    }
-
+    [SerializeField]
     private ObjectState _state;
     public ObjectState state
     {
@@ -32,9 +24,29 @@ public class BaseObjectState : MonoBehaviour
         }
     }
 
-    // ========== MonoBehaviour Functions ==========
-    void Start()
+    // ========== Fields and properties ==========
+    public bool IsHavingAllowedCollider(List<ColliderType> allowedCollidersList)
     {
-        _parentObject = transform.GetComponentInParent<BaseObject>();
+        bool isHavingAllowedCollider = false;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Collider2D collider = transform.GetChild(i).GetComponent<Collider2D>();
+            if (collider == null)
+                continue;
+
+            BaseObjectCollider baseObjectCollider = transform.GetChild(i).GetComponent<BaseObjectCollider>();
+            if (baseObjectCollider == null)
+                continue;
+
+            foreach (ColliderType type in allowedCollidersList)
+            {
+                if (type == baseObjectCollider.type)
+                {
+                    isHavingAllowedCollider = true;
+                    break;
+                }
+            }
+        }
+        return isHavingAllowedCollider;
     }
 }

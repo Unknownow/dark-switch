@@ -9,30 +9,29 @@ public class ObjectSpawner : MonoBehaviour
         return this.GetType().Name;
     }
     // ========== Fields and properties ==========
-    private BaseObject _currentBackground;
+    private BackgroundObject _currentBackground;
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     private void Start()
     {
         InitBackground();
     }
 
-    // ========== Public Functions ==========
+    // ========== Public Methods ==========
 
-    // ========== Private Functions ==========
+    // ========== Private Methods ==========
     private void InitBackground()
     {
-        _currentBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND);
-        _currentBackground.isObjectActive = true;
+        _currentBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND).GetComponent<BackgroundObject>();
         _currentBackground.transform.position = Vector3.zero;
         GameObject currentPlayer = GameObject.FindObjectOfType<Player>().gameObject;
         if (currentPlayer)
         {
-            List<ObjectState> allowedState = currentPlayer.GetComponent<CollisionSystem>().allowedState;
-            int randomAllowedStateIndex = Mathf.FloorToInt(Random.Range(0, allowedState.Count));
-            _currentBackground.currentState = allowedState[randomAllowedStateIndex];
+            List<ColliderType> allowedCollider = currentPlayer.GetComponent<CollisionSystem>().allowedCollider;
+            int randomAllowedStateIndex = Mathf.FloorToInt(Random.Range(0, allowedCollider.Count));
+            _currentBackground.TransformRandomlyToStateWithAllowedCollider(allowedCollider);
         }
         else
-            _currentBackground.isObjectActive = false;
+            _currentBackground.gameObject.SetActive(false);
     }
 }

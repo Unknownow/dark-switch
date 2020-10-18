@@ -12,7 +12,7 @@ public class MovementSystem : MonoBehaviour
     private Vector3 _lastTouchPosition = Vector3.zero;
     private Collider2D _playerCollider;
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     void Start()
     {
         _lastTouchPosition = Vector3.zero;

@@ -12,7 +12,7 @@ public class PlayerInput : MonoBehaviour
     // ========== Fields and properties ==========
     private int _currentMovingFingerId = -1;
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     void Start()
     {
         _currentMovingFingerId = -1;

@@ -33,7 +33,7 @@ public class DrawBounds : MonoBehaviour
     [SerializeField]
     private bool _isDrawing = false;
 
-    // ========== MonoBehaviour Functions ==========
+    // ========== MonoBehaviour Methods ==========
     private void OnDrawGizmos()
     {
         if (!_isDrawing || _isDrawOnSelected)

@@ -17,18 +17,23 @@ public class CollisionSystem : MonoBehaviour
     private Vector2 _objectSize;
 
     [SerializeField]
-    private List<ObjectState> _allowedState = new List<ObjectState>();
-    public List<ObjectState> allowedState
+    private List<ColliderType> _allowedCollider = new List<ColliderType>();
+    public List<ColliderType> allowedCollider
     {
         get
         {
-            return _allowedState;
+            return _allowedCollider;
         }
     }
     private Collider2D _playerCollider;
 
-    private float _deadCountdown = 0;
-    // ========== MonoBehaviour Functions ==========
+    private float _deadCountdown = PlayerConfig.TIME_BEFORE_DEAD;
+    // ========== MonoBehaviour Methods ==========
+    private void Awake()
+    {
+        _deadCountdown = PlayerConfig.TIME_BEFORE_DEAD;
+    }
+
     private void Start()
     {
         _playerCollider = gameObject.GetComponent<Collider2D>();
@@ -66,53 +71,53 @@ public class CollisionSystem : MonoBehaviour
 
     private bool IsAllowedStateAvailable()
     {
-        bool hasAllowedState = false;
+        bool hasAllowedCollider = false;
         Collider2D[] collidersList = Physics2D.OverlapBoxAll(transform.position, _objectSize, 0, _objectMask);
-
         if (collidersList.Length > 0)
         {
-            List<BaseObject> backgroundList = new List<BaseObject>();
+            List<BaseObjectCollider> backgroundColliderList = new List<BaseObjectCollider>();
             foreach (Collider2D collider in collidersList)
             {
-                if (collider.transform.parent == null)
+                BaseObjectCollider baseObjectCollider = collider.gameObject.GetComponent<BaseObjectCollider>();
+                if (baseObjectCollider == null)
                     continue;
-                BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
-                if (baseObjectState == null)
+
+                BaseObject baseObject = collider.transform.parent.parent.GetComponent<BaseObject>();
+                if (baseObject == null || baseObject.type != ObjectType.BACK_GROUND)
                     continue;
-                BaseObject baseObject = baseObjectState.parentObject;
-                if (baseObject && baseObject.type == ObjectType.BACK_GROUND)
-                    backgroundList.Add(baseObject);
+
+                hasAllowedCollider = CheckIfObjectColliderIsInAllowedCollider(baseObjectCollider);
+                if (hasAllowedCollider)
+                    break;
             }
 
-            if (backgroundList.Count > 0)
+            foreach (Collider2D collider in collidersList)
             {
-                foreach (BaseObject background in backgroundList)
+                BaseObjectCollider baseObjectCollider = collider.gameObject.GetComponent<BaseObjectCollider>();
+                if (baseObjectCollider == null)
+                    continue;
+
+                BaseObject baseObject = collider.transform.parent.parent.GetComponent<BaseObject>();
+                if (baseObject == null || baseObject.type == ObjectType.BACK_GROUND)
+                    continue;
+
+                if (hasAllowedCollider)
                 {
-                    hasAllowedState = CheckIfObjectIsInAllowedState(background);
-                    if (hasAllowedState)
+                    bool isInUnallowedCollider = !CheckIfObjectColliderIsInAllowedCollider(baseObjectCollider) && CheckIfColliderIsWithinAnotherCollider(_playerCollider, collider);
+                    hasAllowedCollider = !isInUnallowedCollider;
+                    if (!hasAllowedCollider)
                         break;
                 }
-
-                foreach (Collider2D collider in collidersList)
+                else
                 {
-                    BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
-                    BaseObject baseObject = baseObjectState.parentObject;
-                    if (baseObject.type == ObjectType.BACK_GROUND)
-                        continue;
-                    if (hasAllowedState)
-                    {
-                        if (!CheckIfObjectIsInAllowedState(baseObject) && CheckIfColliderIsWithinAnotherCollider(_playerCollider, collider))
-                        {
-                            hasAllowedState = false;
-                            break;
-                        }
-                    }
-                    else
-                        hasAllowedState = CheckIfObjectIsInAllowedState(baseObject);
+                    hasAllowedCollider = CheckIfObjectColliderIsInAllowedCollider(baseObjectCollider);
+                    if (hasAllowedCollider)
+                        break;
                 }
             }
         }
-        return hasAllowedState;
+
+        return hasAllowedCollider;
     }
 
     private bool CheckIfColliderIsWithinAnotherCollider(Collider2D checkCollider, Collider2D targetCollider)
@@ -122,13 +127,13 @@ public class CollisionSystem : MonoBehaviour
         return false;
     }
 
-    private bool CheckIfObjectIsInAllowedState(BaseObject baseObject)
+    private bool CheckIfObjectColliderIsInAllowedCollider(BaseObjectCollider baseObjectCollider)
     {
-        foreach (ObjectState state in _allowedState)
+        foreach (ColliderType type in allowedCollider)
         {
-            if (state != baseObject.currentState)
-                return false;
+            if (type == baseObjectCollider.type)
+                return true;
         }
-        return true;
+        return false;
     }
 }

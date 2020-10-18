@@ -21,24 +21,25 @@ public class ObjectPool : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> _prefabsList = new List<GameObject>();
-    private List<BaseObject> _pool;
+    private List<GameObject> _pool;
     private ObjectPool()
     {
         if (_instance == null)
             _instance = this;
-        _pool = new List<BaseObject>();
+        _pool = new List<GameObject>();
     }
 
     // ========== Public Methods ==========
-    public BaseObject GetObject(ObjectType type)
+    public GameObject GetObject(ObjectType type)
     {
-        BaseObject baseObject = null;
-        foreach (BaseObject obj in _pool)
+        GameObject baseObject = null;
+        foreach (GameObject obj in _pool)
         {
-            LogUtils.instance.Log(GetClassName(), "GET_OBJECT", obj.isObjectActive.ToString());
-            if (obj.type == type && obj.isObjectActive == false)
+            LogUtils.instance.Log(GetClassName(), "GET_OBJECT", obj.activeSelf.ToString());
+            BaseObject baseObjectComponent = obj.GetComponent<BaseObject>();
+            if (baseObjectComponent != null && baseObjectComponent.type == type && obj.activeSelf == false)
             {
-                LogUtils.instance.Log(GetClassName(), "GetObject", obj.isObjectActive.ToString());
+                LogUtils.instance.Log(GetClassName(), "GetObject", obj.activeSelf.ToString());
                 baseObject = obj;
                 break;
             }
@@ -46,21 +47,16 @@ public class ObjectPool : MonoBehaviour
         if (baseObject == null)
             baseObject = CreateObject(type);
         baseObject.transform.position = new Vector3(-100, -100, 0);
-        baseObject.isObjectActive = true;
+        baseObject.SetActive(true);
         return baseObject;
     }
 
-    public void DestroyObject(BaseObject baseObject)
-    {
-        baseObject.isObjectActive = false;
-    }
-
     // ========== Private Methods ==========
-    private BaseObject CreateObject(ObjectType type, Transform parent = null)
+    private GameObject CreateObject(ObjectType type, Transform parent = null)
     {
         LogUtils.instance.Log(GetClassName(), "CreateObject");
         GameObject objectPrefab = null;
-        BaseObject createdObject = null;
+        GameObject createdObject = null;
 
         LogUtils.instance.Log(GetClassName(), "_prefabsList length", (_prefabsList.Count).ToString());
         foreach (GameObject prefab in _prefabsList)
@@ -79,11 +75,11 @@ public class ObjectPool : MonoBehaviour
         {
             if (parent == null)
                 parent = _instance.transform;
-            createdObject = GameObject.Instantiate(objectPrefab, Vector3.zero, Quaternion.identity, parent).GetComponent<BaseObject>();
+            createdObject = GameObject.Instantiate(objectPrefab, Vector3.zero, Quaternion.identity, parent);
             if (createdObject != null)
             {
                 LogUtils.instance.Log(GetClassName(), "CreateObject", "(createdObject != null)", (createdObject != null).ToString());
-                createdObject.isObjectActive = false;
+                createdObject.SetActive(false);
                 _pool.Add(createdObject);
             }
         }
