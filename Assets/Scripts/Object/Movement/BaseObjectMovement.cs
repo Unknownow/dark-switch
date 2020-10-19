@@ -57,7 +57,7 @@ public class BaseObjectMovement : MonoBehaviour
     private Vector3 endPosition;
 
     // ========== MonoBehaviour Methods ==========
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         endPosition = transform.position;
         velocity = Vector3.zero;
@@ -65,34 +65,39 @@ public class BaseObjectMovement : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!CheckEndPosition())
-            MoveWithVelocity();
+        MoveWithVelocity();
     }
 
     // ========== Public Methods ==========
-    public void MoveTo(Vector3 endPosition)
+    public float MoveTo(Vector3 endPosition)
     {
         velocity = endPosition - transform.position;
         velocity = velocity.normalized * movementSpeed * movementSpeedMultiplier;
         this.endPosition = endPosition;
+
+        float travelTime = Vector3.Distance(transform.position, endPosition) / velocity.magnitude;
+        return travelTime;
     }
 
-    public void MoveBy(Vector3 distance)
+    public float MoveBy(Vector3 distance)
     {
         endPosition = transform.position + distance;
         velocity = distance.normalized * movementSpeed * movementSpeedMultiplier;
+
+        float travelTime = Vector3.Distance(transform.position, endPosition) / velocity.magnitude;
+        return travelTime;
     }
 
     // ========== Protected Methods ==========
     protected void MoveWithVelocity()
     {
-        transform.position += velocity * Time.deltaTime;
-    }
-
-    protected bool CheckEndPosition()
-    {
         if (transform.position == endPosition)
-            return true;
-        return false;
+            return;
+        if (Vector3.Distance(transform.position, endPosition) <= movementSpeed * movementSpeedMultiplier * Time.deltaTime)
+        {
+            transform.position = endPosition;
+            return;
+        }
+        transform.position += velocity * Time.deltaTime;
     }
 }
