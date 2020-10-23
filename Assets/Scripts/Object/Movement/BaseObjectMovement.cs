@@ -88,6 +88,21 @@ public class BaseObjectMovement : MonoBehaviour
         return travelTime;
     }
 
+    // ========== Public Methods ==========
+    public float MoveDownByScreenSize(float screenHeightMultiply = 1)
+    {
+        Vector3 moveDistanceVector = new Vector3(0, -Camera.main.orthographicSize * 2f * screenHeightMultiply, 0);
+        return MoveBy(moveDistanceVector);
+    }
+
+    public float MoveDownToEndScreen()
+    {
+        Vector3 cameraPosition = Camera.main.transform.position;
+        float cameraHeight = Camera.main.orthographicSize * 2f;
+        Vector3 endPosition = new Vector3(cameraPosition.x, cameraPosition.y - cameraHeight, 0);
+        return MoveTo(endPosition);
+    }
+
     // ========== Protected Methods ==========
     protected void MoveWithVelocity()
     {

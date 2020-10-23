@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectSpawner : MonoBehaviour
+public class BackgroundSpawner : MonoBehaviour
 {
     public string GetClassName()
     {
@@ -30,33 +30,8 @@ public class ObjectSpawner : MonoBehaviour
         InitBackground();
     }
 
-    private void Update()
-    {
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     SpawnNextBackground();
-        // }
-    }
-
     // ========== Public Methods ==========
-
-    // ========== Private Methods ==========
-    private void InitBackground()
-    {
-        _currentBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND);
-        _currentBackground.transform.position = Vector3.zero;
-        if (currentPlayer)
-        {
-            List<ColliderType> allowedCollider = currentPlayer.GetComponent<CollisionSystem>().allowedCollider;
-            int randomAllowedStateIndex = Mathf.FloorToInt(Random.Range(0, allowedCollider.Count));
-            _currentBackground.GetComponent<BackgroundObject>().TransformRandomlyToStateWithAllowedCollider(allowedCollider);
-        }
-        else
-            _currentBackground.gameObject.SetActive(false);
-        _isBackgroundMoving = false;
-    }
-
-    private void SpawnNextBackground(bool isBackgroundAllowed = false)
+    public void SpawnNextBackground(bool isBackgroundAllowed = false)
     {
         if (_isBackgroundMoving)
             return;
@@ -65,8 +40,8 @@ public class ObjectSpawner : MonoBehaviour
         GameObject newBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND);
 
         newBackground.transform.position = new Vector3(0, Camera.main.orthographicSize * 2f - 0.2f, 0);
-        newBackground.GetComponent<BaseObjectMovement>().MoveTo(Vector3.zero);
-        float movingTime = _currentBackground.GetComponent<BaseObjectMovement>().MoveTo(new Vector3(0, -Camera.main.orthographicSize * 2f, 0));
+        newBackground.GetComponent<BaseObjectMovement>().MoveTo(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 0));
+        float movingTime = _currentBackground.GetComponent<BaseObjectMovement>().MoveDownByScreenSize(1);
         _lastBackground = _currentBackground;
         _currentBackground = newBackground;
 
@@ -83,6 +58,22 @@ public class ObjectSpawner : MonoBehaviour
             _currentBackground.gameObject.SetActive(false);
 
         Invoke("OnBackgroundMovingDone", movingTime);
+    }
+
+    // ========== Private Methods ==========
+    private void InitBackground()
+    {
+        _currentBackground = ObjectPool.instance.GetObject(ObjectType.BACK_GROUND);
+        _currentBackground.transform.position = Vector3.zero;
+        if (currentPlayer)
+        {
+            List<ColliderType> allowedCollider = currentPlayer.GetComponent<CollisionSystem>().allowedCollider;
+            int randomAllowedStateIndex = Mathf.FloorToInt(Random.Range(0, allowedCollider.Count));
+            _currentBackground.GetComponent<BackgroundObject>().TransformRandomlyToStateWithAllowedCollider(allowedCollider);
+        }
+        else
+            _currentBackground.gameObject.SetActive(false);
+        _isBackgroundMoving = false;
     }
 
     private void OnBackgroundMovingDone()

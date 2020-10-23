@@ -7,6 +7,7 @@ public enum ObjectType
 {
     BASE,
     BACK_GROUND,
+    OBSTACLE_LINE,
 }
 
 public enum ObjectState
@@ -43,24 +44,6 @@ public class BaseObject : MonoBehaviour
     }
 
     [SerializeField]
-    protected int _sortingOrder = 0;
-    public int sortingOrder
-    {
-        get
-        {
-            return this._sortingOrder;
-        }
-        set
-        {
-            this._sortingOrder = value;
-            foreach (GameObject child in this._stateObjectList)
-            {
-                child.GetComponent<SpriteRenderer>().sortingOrder = value;
-            }
-        }
-    }
-
-    [SerializeField]
     protected ObjectType _type = ObjectType.BASE;
     public ObjectType type
     {
@@ -74,7 +57,6 @@ public class BaseObject : MonoBehaviour
     protected virtual void Awake()
     {
         InitObject();
-        sortingOrder = _sortingOrder;
         TransformState(_currentState);
     }
 

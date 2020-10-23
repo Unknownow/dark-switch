@@ -10,7 +10,6 @@ public class BackgroundObject : BaseObject
     protected override void Awake()
     {
         InitObject();
-        sortingOrder = _sortingOrder;
         this._type = ObjectType.BACK_GROUND;
     }
 
