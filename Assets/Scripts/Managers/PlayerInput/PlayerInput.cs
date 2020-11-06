@@ -21,9 +21,22 @@ public class PlayerInput : MonoBehaviour
     void Update()
     {
         GetPlayerInput();
+        GetMouseInput();
     }
 
     // ========== Private Methods ==========
+    private void GetMouseInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Vector3 mousePosition = Input.mousePosition;
+            if (mousePosition.y >= Screen.height / 2)
+            {
+                EventSystem.instance.DispatchEvent(EventCode.ON_TRANSFORM_CLICK, new object[] { });
+            }
+        }
+    }
+
     /// <summary>
     /// Get player input and dispatch it.
     /// </summary>

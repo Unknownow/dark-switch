@@ -11,6 +11,13 @@ public class BackgroundSpawner : MonoBehaviour
     // ========== Fields and properties ==========
     private GameObject _currentBackground;
     private GameObject _lastBackground;
+    public GameObject currentBackground
+    {
+        get
+        {
+            return this._currentBackground;
+        }
+    }
     private GameObject _currentPlayer;
     public GameObject currentPlayer
     {

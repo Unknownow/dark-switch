@@ -8,6 +8,7 @@ public enum ObjectType
     BASE,
     BACK_GROUND,
     OBSTACLE_LINE,
+    OBSTACLE_SWING,
 }
 
 public enum ObjectState
@@ -74,10 +75,24 @@ public class BaseObject : MonoBehaviour
         RemoveListeners();
     }
 
+    protected void OnDestroy()
+    {
+        RemoveListeners();
+    }
+
+    protected void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("ObjectTrigger"))
+            OnObjectTriggered();
+        if (other.CompareTag("ObjectDestroyer"))
+            OnObjectDestroyed();
+    }
+
     protected void AddListeners()
     {
         _eventListener = new EventListener[1];
         _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_TOUCH, this, OnTransformTouch);
+        _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_CLICK, this, OnTransformClick);
     }
 
     protected void RemoveListeners()
@@ -88,12 +103,14 @@ public class BaseObject : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    // ========== Public Methods ==========
+    public virtual void ResetObject()
     {
-        RemoveListeners();
+        Vector3 cameraPosition = Camera.main.transform.position;
+        float cameraHeight = Camera.main.orthographicSize * 2f;
+        transform.position = new Vector3(cameraPosition.x, cameraPosition.y + cameraHeight, 0);
     }
 
-    // ========== Public Methods ==========
     public virtual void TransformState(ObjectState state = ObjectState.STATE_0)
     {
         LogUtils.instance.Log(GetClassName(), gameObject.name, "TransformState", state.ToString());
@@ -113,4 +130,22 @@ public class BaseObject : MonoBehaviour
             TransformState((ObjectState)(((int)_currentState + 1) % 2));
         }
     }
+
+    protected void OnTransformClick(object[] eventParam)
+    {
+        TransformState((ObjectState)(((int)_currentState + 1) % 2));
+    }
+
+    protected virtual void OnObjectTriggered()
+    {
+        LogUtils.instance.Log(GetClassName(), "OnTriggerObject", "OVERRIDE_ME");
+    }
+
+    protected virtual void OnObjectDestroyed()
+    {
+        LogUtils.instance.Log(GetClassName(), "OnObjectDestroyed", "OVERRIDE_ME", "REMEMBER_USE_BASE");
+        gameObject.SetActive(false);
+    }
+
+    // ========== Protected Methods ==========
 }

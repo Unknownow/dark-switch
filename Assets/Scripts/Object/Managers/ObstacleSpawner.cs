@@ -12,26 +12,30 @@ public class ObstacleSpawner : MonoBehaviour
     private float _spawnCountdown = 5;
 
     // ========== MonoBehaviour Methods ==========
-    void Start()
-    {
-
-    }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.S))
-            SpawnObstacle(ObjectType.OBSTACLE_LINE);
-        SpawnObstacleOverTime();
+            SpawnObstacle(ObjectType.OBSTACLE_SWING);
+        // SpawnObstacleOverTime();
     }
 
     // ========== Public Methods ==========
     public void SpawnObstacle(ObjectType type)
     {
         GameObject obstacle = ObjectPool.instance.GetObject(type);
-        Vector3 cameraPosition = Camera.main.transform.position;
-        float cameraHeight = Camera.main.orthographicSize * 2f;
-        obstacle.transform.position = new Vector3(cameraPosition.x, cameraPosition.y + cameraHeight, 0);
-        obstacle.GetComponent<BaseObjectMovement>().MoveDownToEndScreen();
+        GameObject currentBackground = GameObject.FindObjectOfType<BackgroundSpawner>().currentBackground;
+        ObjectState currentBackgroundState = currentBackground.GetComponent<BaseObject>().currentState;
+        ObjectState[] valueList = (ObjectState[])System.Enum.GetValues(typeof(ObjectState));
+        // ObjectState randomState = currentBackgroundState;
+        // do
+        // {
+        //     randomState = valueList[Random.Range(0, valueList.Length)];
+        // }
+        // while (randomState == currentBackgroundState);
+        obstacle.GetComponent<BaseObject>().TransformState(currentBackgroundState);
+        obstacle.GetComponent<BaseObject>().ResetObject();
+        obstacle.GetComponent<BaseObjectMovement>().MoveDown();
     }
 
     // ========== Private Methods ==========
@@ -42,7 +46,7 @@ public class ObstacleSpawner : MonoBehaviour
             _spawnCountdown -= Time.deltaTime;
             return;
         }
-        _spawnCountdown = 5;
+        _spawnCountdown = 2;
         SpawnObstacle(ObjectType.OBSTACLE_LINE);
     }
 }

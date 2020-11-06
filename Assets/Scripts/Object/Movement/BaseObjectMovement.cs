@@ -68,6 +68,12 @@ public class BaseObjectMovement : MonoBehaviour
         MoveWithVelocity();
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("ObjectDestroyer"))
+            endPosition = transform.position;
+    }
+
     // ========== Public Methods ==========
     public float MoveTo(Vector3 endPosition)
     {
@@ -88,19 +94,16 @@ public class BaseObjectMovement : MonoBehaviour
         return travelTime;
     }
 
-    // ========== Public Methods ==========
     public float MoveDownByScreenSize(float screenHeightMultiply = 1)
     {
         Vector3 moveDistanceVector = new Vector3(0, -Camera.main.orthographicSize * 2f * screenHeightMultiply, 0);
         return MoveBy(moveDistanceVector);
     }
 
-    public float MoveDownToEndScreen()
+    public void MoveDown()
     {
-        Vector3 cameraPosition = Camera.main.transform.position;
-        float cameraHeight = Camera.main.orthographicSize * 2f;
-        Vector3 endPosition = new Vector3(cameraPosition.x, cameraPosition.y - cameraHeight, 0);
-        return MoveTo(endPosition);
+        Vector3 endPosition = new Vector3(transform.position.x, -float.MaxValue, transform.position.z);
+        MoveTo(endPosition);
     }
 
     // ========== Protected Methods ==========
@@ -108,11 +111,13 @@ public class BaseObjectMovement : MonoBehaviour
     {
         if (transform.position == endPosition)
             return;
-        if (Vector3.Distance(transform.position, endPosition) <= movementSpeed * movementSpeedMultiplier * Time.deltaTime)
+        if (Vector3.Distance(transform.position, endPosition) <= movementSpeed * movementSpeedMultiplier * Time.deltaTime * 2)
         {
             transform.position = endPosition;
             return;
         }
         transform.position += velocity * Time.deltaTime;
     }
+
+    // ========== Private Methods ==========
 }

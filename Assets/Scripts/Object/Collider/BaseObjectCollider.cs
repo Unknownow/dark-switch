@@ -6,6 +6,7 @@ public enum ColliderType
 {
     COLLIDER_0,
     COLLIDER_1,
+    INSTANT_DIE,
 }
 
 public class BaseObjectCollider : MonoBehaviour

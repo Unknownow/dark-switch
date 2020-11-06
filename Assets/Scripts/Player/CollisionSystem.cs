@@ -50,6 +50,13 @@ public class CollisionSystem : MonoBehaviour
         if (_deadCountdown <= 0)
             return;
 
+        if (CheckInstantDieCollision())
+        {
+            _deadCountdown = -1;
+            EventSystem.instance.DispatchEvent(EventCode.ON_PLAYER_DIED);
+            LogUtils.instance.Log(GetClassName(), "ON PLAYER DIED");
+        }
+
         bool isAllowedStateAvailable = IsAllowedStateAvailable();
         if (!isAllowedStateAvailable)
         {
@@ -118,6 +125,27 @@ public class CollisionSystem : MonoBehaviour
         }
 
         return hasAllowedCollider;
+    }
+
+    private bool CheckInstantDieCollision()
+    {
+        bool isCollideWithSpike = false;
+        Collider2D[] collidersList = Physics2D.OverlapBoxAll(transform.position, _objectSize, 0, _objectMask);
+        if (collidersList.Length > 0)
+        {
+            foreach (Collider2D collider in collidersList)
+            {
+                BaseObjectCollider baseObjectCollider = collider.gameObject.GetComponent<BaseObjectCollider>();
+                if (baseObjectCollider == null)
+                    continue;
+
+                isCollideWithSpike = (baseObjectCollider.type == ColliderType.INSTANT_DIE);
+                if (isCollideWithSpike)
+                    break;
+            }
+        }
+
+        return isCollideWithSpike;
     }
 
     private bool CheckIfColliderIsWithinAnotherCollider(Collider2D checkCollider, Collider2D targetCollider)
