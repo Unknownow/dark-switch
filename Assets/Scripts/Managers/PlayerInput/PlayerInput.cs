@@ -10,9 +10,17 @@ public class PlayerInput : MonoBehaviour
     }
 
     // ========== Fields and properties ==========
+    [SerializeField]
+    private float _maxPlayerTransformDelay;
+    private float _playerTransformDelayCountdown;
     private int _currentMovingFingerId = -1;
 
     // ========== MonoBehaviour Methods ==========
+    private void Awake()
+    {
+        _playerTransformDelayCountdown = 0;
+    }
+
     void Start()
     {
         _currentMovingFingerId = -1;
@@ -20,6 +28,7 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
+        PlayerTouchDelayCountdown();
         GetPlayerInput();
         GetMouseInput();
     }
@@ -30,9 +39,10 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Vector3 mousePosition = Input.mousePosition;
-            if (mousePosition.y >= Screen.height / 2)
+            if (IsPlayerTransformDoable() && mousePosition.y >= Screen.height / 2)
             {
                 EventSystem.instance.DispatchEvent(EventCode.ON_TRANSFORM_CLICK, new object[] { });
+                ResetPlayerTouchDelayCountdown();
             }
         }
     }
@@ -49,9 +59,10 @@ public class PlayerInput : MonoBehaviour
                 Touch touch = Input.GetTouch(i);
                 if (touch.position.y >= Screen.height / 2)
                 {
-                    if (touch.phase == TouchPhase.Began)
+                    if (IsPlayerTransformDoable() && touch.phase == TouchPhase.Began)
                     {
                         EventSystem.instance.DispatchEvent(EventCode.ON_TRANSFORM_TOUCH, new object[] { touch });
+                        ResetPlayerTouchDelayCountdown();
                         break;
                     }
                 }
@@ -90,5 +101,25 @@ public class PlayerInput : MonoBehaviour
         EventSystem.instance.DispatchEvent(EventCode.ON_MOVING_TOUCH, new object[] { touch });
         if (touch.phase == TouchPhase.Ended)
             _currentMovingFingerId = -1;
+    }
+
+    private void PlayerTouchDelayCountdown()
+    {
+        if (_playerTransformDelayCountdown > 0)
+        {
+            _playerTransformDelayCountdown -= Time.deltaTime;
+            return;
+        }
+        _playerTransformDelayCountdown = 0;
+    }
+
+    private void ResetPlayerTouchDelayCountdown()
+    {
+        _playerTransformDelayCountdown = _maxPlayerTransformDelay;
+    }
+
+    private bool IsPlayerTransformDoable()
+    {
+        return _playerTransformDelayCountdown <= 0;
     }
 }

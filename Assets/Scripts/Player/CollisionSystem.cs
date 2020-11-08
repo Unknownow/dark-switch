@@ -89,8 +89,12 @@ public class CollisionSystem : MonoBehaviour
                 if (baseObjectCollider == null)
                     continue;
 
+                BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
+                if (baseObjectState == null)
+                    continue;
+
                 BaseObject baseObject = collider.transform.parent.parent.GetComponent<BaseObject>();
-                if (baseObject == null || baseObject.type != ObjectType.BACK_GROUND)
+                if (baseObject == null || baseObject.type != ObjectType.BACK_GROUND || baseObjectState.state != baseObject.currentState)
                     continue;
 
                 hasAllowedCollider = CheckIfObjectColliderIsInAllowedCollider(baseObjectCollider);
@@ -104,8 +108,12 @@ public class CollisionSystem : MonoBehaviour
                 if (baseObjectCollider == null)
                     continue;
 
+                BaseObjectState baseObjectState = collider.transform.parent.GetComponent<BaseObjectState>();
+                if (baseObjectState == null)
+                    continue;
+
                 BaseObject baseObject = collider.transform.parent.parent.GetComponent<BaseObject>();
-                if (baseObject == null || baseObject.type == ObjectType.BACK_GROUND)
+                if (baseObject == null || baseObject.type == ObjectType.BACK_GROUND || baseObjectState.state != baseObject.currentState)
                     continue;
 
                 if (hasAllowedCollider)

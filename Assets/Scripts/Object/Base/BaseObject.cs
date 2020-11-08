@@ -61,20 +61,6 @@ public class BaseObject : MonoBehaviour
         TransformState(_currentState);
     }
 
-    protected void InitObject()
-    {
-        int stateCount = transform.childCount;
-        _stateObjectList = new GameObject[stateCount];
-        for (int i = 0; i < stateCount; i++)
-            _stateObjectList[i] = transform.GetChild(i).gameObject;
-        AddListeners();
-    }
-
-    protected void ClearObject()
-    {
-        RemoveListeners();
-    }
-
     protected void OnDestroy()
     {
         RemoveListeners();
@@ -88,11 +74,28 @@ public class BaseObject : MonoBehaviour
             OnObjectDestroyed();
     }
 
+    // ========== Initialization Methods ==========
+    protected void InitObject()
+    {
+        int stateCount = transform.childCount;
+        _stateObjectList = new GameObject[stateCount];
+        for (int i = 0; i < stateCount; i++)
+        {
+            BaseObjectState objectState = transform.GetChild(i).GetComponent<BaseObjectState>();
+            if (objectState != null)
+            {
+                _stateObjectList[i] = transform.GetChild(i).gameObject;
+                objectState.state = (ObjectState)i;
+            }
+        }
+        AddListeners();
+    }
+
     protected void AddListeners()
     {
-        _eventListener = new EventListener[1];
+        _eventListener = new EventListener[2];
         _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_TOUCH, this, OnTransformTouch);
-        _eventListener[0] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_CLICK, this, OnTransformClick);
+        _eventListener[1] = EventSystem.instance.AddListener(EventCode.ON_TRANSFORM_CLICK, this, OnTransformClick);
     }
 
     protected void RemoveListeners()
@@ -117,7 +120,8 @@ public class BaseObject : MonoBehaviour
         _currentState = state;
         for (int i = 0; i < _stateObjectList.Length; i++)
         {
-            _stateObjectList[i].SetActive(i == (int)_currentState);
+            // _stateObjectList[i].SetActive(i == (int)_currentState);
+            _stateObjectList[i].GetComponent<BaseObjectState>().TransformState(i == (int)_currentState);
         }
     }
 
